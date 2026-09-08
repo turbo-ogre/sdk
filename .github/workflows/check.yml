@@ -19,5 +19,7 @@ jobs:
           node-version: ${{ matrix.node }}
       - run: npm ci --ignore-scripts --no-audit --no-fund
       - run: npm run check
+      - run: npm run demo
+      - run: node bin/turbo-ogre.mjs onboard --file examples/biohazard/hosting.json --dry-run
       - run: node bin/turbo-ogre.mjs check --file examples/content-forge/hosting.json
       - run: npm pack --dry-run

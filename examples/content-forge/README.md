@@ -9,7 +9,8 @@ The [hosting declaration](hosting.json) works with the current artifact API.
 Check it from this checkout:
 
 ```sh
-node bin/turbo-ogre.mjs check --file examples/content-forge/hosting.json
+node bin/turbo-ogre.mjs onboard --file examples/content-forge/hosting.json --dry-run
+npm run demo
 ```
 
 In the content-forge checkout, generate the selected review sheets, then run
@@ -17,6 +18,8 @@ In the content-forge checkout, generate the selected review sheets, then run
 evidence. Install a reviewed SDK commit, register `hosting.json`, and publish
 `work/hosting/review-site.tar.gz` using the commands in the main README. The
 consumer keeps its own declaration; this directory is the onboarding example.
+Both consumers expose `npm run hosting:plan` for a local request preview and
+`npm run hosting:onboard` for registration and identity-bound readback in Actions.
 
 The hosting artifact is a candidate review site, not a game-content release.
 Each sheet's decisions remain local until the reviewer exports notes. Persistent

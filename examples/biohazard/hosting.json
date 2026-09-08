@@ -1,0 +1,9 @@
+{
+  "version": 1,
+  "project": "biohazard",
+  "channels": {
+    "preview": {"artifacts": ["*"], "retain": 1},
+    "canary": {"artifacts": ["game-bundle.tar.gz", "world.json"], "retain": 3},
+    "stable": {"artifacts": ["game-bundle.tar.gz", "world.json"], "retain": 5}
+  }
+}

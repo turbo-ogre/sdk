@@ -1,14 +1,36 @@
 {
   "name": "@turbo-ogre/sdk",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "Public clients for the Turbo Ogre hosting backend",
   "type": "module",
   "private": true,
   "license": "MIT",
-  "repository": {"type": "git", "url": "https://github.com/turbo-ogre/sdk.git"},
-  "engines": {"node": ">=22"},
-  "exports": {".": {"types": "./src/index.d.ts", "import": "./src/index.mjs"}},
-  "bin": {"turbo-ogre": "./bin/turbo-ogre.mjs"},
-  "files": ["src/", "bin/", "schema/", "README.md", "LICENSE"],
-  "scripts": {"test": "node --test test/*.test.mjs", "check": "node --check src/index.mjs && node --check bin/turbo-ogre.mjs && npm test"}
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/turbo-ogre/sdk.git"
+  },
+  "engines": {
+    "node": ">=22"
+  },
+  "exports": {
+    ".": {
+      "types": "./src/index.d.ts",
+      "import": "./src/index.mjs"
+    }
+  },
+  "bin": {
+    "turbo-ogre": "./bin/turbo-ogre.mjs"
+  },
+  "files": [
+    "src/",
+    "bin/",
+    "schema/",
+    "README.md",
+    "LICENSE"
+  ],
+  "scripts": {
+    "test": "node --test test/*.test.mjs",
+    "check": "node --check src/index.mjs && node --check src/cli.mjs && node --check src/onboarding.mjs && node --check bin/turbo-ogre.mjs && npm test",
+    "demo": "node examples/demo.mjs"
+  }
 }
