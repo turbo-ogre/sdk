@@ -30,7 +30,10 @@
   ],
   "scripts": {
     "test": "node --test test/*.test.mjs",
-    "check": "node --check src/index.mjs && node --check src/cli.mjs && node --check src/onboarding.mjs && node --check bin/turbo-ogre.mjs && npm test",
+    "check": "node scripts/check.mjs",
+    "check:package": "node scripts/check-package.mjs",
+    "lint:workflows": "node scripts/lint-workflows.mjs",
+    "hooks:install": "node scripts/install-hooks.mjs",
     "demo": "node examples/demo.mjs"
   }
 }

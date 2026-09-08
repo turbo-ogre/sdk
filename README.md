@@ -9,6 +9,7 @@ The initial consumers are [content-forge](examples/content-forge/README.md), wit
 Minecraft content review sheets, and [Biohazard](examples/biohazard/README.md),
 with game/world artifacts and preview channels. Start with the
 [MVP review loop](docs/mvp-review.md) to try both without credentials.
+For development, see [contributing and Git checks](CONTRIBUTING.md).
 
 ## Current scope
 
