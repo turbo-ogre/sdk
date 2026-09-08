@@ -1,5 +1,8 @@
 # Backend compatibility and onboarding boundary
 
+See the [Railway and Actions gap review](backend-api-gaps.md) for the concrete
+consumer operations, missing backend surfaces, and proposed migration order.
+
 Inspected 2026-09-08 against `jrepp/hosting` revision `109475c` and the live
 jrepp.com gateway. The source supports registration and artifact operations;
 the backend README's phase-one-only status is stale. No backend imports are
