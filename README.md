@@ -5,8 +5,11 @@ developed across the jrepp.com hosting and auth repositories. Projects integrate
 through this SDK and HTTP contracts. They own their content and declarations;
 the backend owns placement, gateway routing, identity, and access policy.
 
-The first consumer is [content-forge](examples/content-forge/README.md): small
-Minecraft content review sheets with retained Blockbench sources.
+The initial consumers are [content-forge](examples/content-forge/README.md), with
+Minecraft content review sheets, and [Biohazard](examples/biohazard/README.md),
+with game/world artifacts and preview channels. Start with the
+[MVP review loop](docs/mvp-review.md) to try both without credentials.
+For development, see [contributing and Git checks](CONTRIBUTING.md).
 
 ## Current scope
 
@@ -16,6 +19,8 @@ against backend revision `109475c`. It supports:
 - Local declaration creation and validation, with unknown fields rejected.
 - GitHub Actions OIDC identity acquisition and channel authorization checks.
 - Registration and inspection of the declaration governing the caller's ref.
+- One `onboard` operation that registers, reads back, and verifies the expected
+  repository, numeric repository ID, ref, and declaration.
 - Artifact upload, listing, and download, with upload receipt and download hash
   verification. Backend refusal reason strings remain available to callers.
 
@@ -33,8 +38,9 @@ published yet (`private: true`). For the initial checkout:
 git clone https://github.com/turbo-ogre/sdk.git
 cd sdk
 npm run check
+npm run demo
 node bin/turbo-ogre.mjs init --project my-project
-node bin/turbo-ogre.mjs check
+node bin/turbo-ogre.mjs onboard --dry-run
 ```
 
 `init` creates `hosting.json` and refuses to overwrite it. JSON is an accepted
@@ -58,7 +64,8 @@ Supply the backend URL and token audience as deployment environment variables:
 ```sh
 export TURBO_OGRE_URL='https://t1.jrepp.com/hosting'
 export TURBO_OGRE_AUDIENCE='https://hosting.jrepp.com'
-npx turbo-ogre register --file hosting.json
+npx turbo-ogre onboard --dry-run
+npx turbo-ogre onboard
 npx turbo-ogre validate --channel canary
 npx turbo-ogre publish --channel canary --artifact review-site.tar.gz --file review-site.tar.gz
 npx turbo-ogre status
@@ -72,6 +79,14 @@ client source. In Actions, grant `permissions: id-token: write`; the SDK mints
 the short-lived identity. It writes no credential files. An operator may supply
 `TURBO_OGRE_TOKEN` through their environment for a supported backend identity.
 An auth portal cookie is not a hosting-api token.
+
+`onboard` reads `GITHUB_REPOSITORY`, `GITHUB_REPOSITORY_ID`, and `GITHUB_REF`
+from the workflow environment and requires all three before registration. An
+operator using a supplied token must set these expected values explicitly.
+The client checks the registration receipt and readback against them. A local
+`--dry-run` needs none of these variables and performs no HTTP calls. It previews
+the request; it does not certify backend capability or grant authorization.
+The low-level `register` operation remains available for compatibility.
 
 Save the upload receipt. Downloads require its digest:
 
@@ -96,7 +111,14 @@ const client = new TurboOgreClient({
   baseUrl: process.env.TURBO_OGRE_URL,
   token: githubActionsToken({audience: process.env.TURBO_OGRE_AUDIENCE}),
 });
-await client.register(JSON.parse(await readFile('hosting.json', 'utf8')));
+await client.onboard({
+  declaration: JSON.parse(await readFile('hosting.json', 'utf8')),
+  expected: {
+    repository: process.env.GITHUB_REPOSITORY,
+    repositoryId: process.env.GITHUB_REPOSITORY_ID,
+    ref: process.env.GITHUB_REF,
+  },
+});
 const receipt = await client.publish({
   channel: 'canary', artifact: 'review-site.tar.gz',
   bytes: await readFile('review-site.tar.gz'),

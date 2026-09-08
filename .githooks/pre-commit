@@ -1,0 +1,4 @@
+#!/bin/sh
+# Copyright (c) 2026 Jacob Repp. SPDX-License-Identifier: MIT
+set -eu
+exec node scripts/pre-commit.mjs

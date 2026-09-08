@@ -5,6 +5,18 @@ export interface Registration { repository: string; repositoryId: string; ref: s
 export interface ArtifactRecord { repository: string; repositoryId: string; channel: string; artifact: string; size: number; storedAt: string }
 export interface PublishReceipt extends ArtifactRecord { digest: string }
 export type TokenProvider = () => Promise<string>;
+export interface ExpectedIdentity {repository: string; repositoryId: string; ref: string}
+export interface OnboardingPlan {
+  schema: 1;
+  operation: 'register-declaration';
+  project: string;
+  declarationDigest: string;
+  channels: Declaration['channels'];
+  steps: string[];
+  deployment: 'not-requested';
+}
+export interface OnboardingResult extends OnboardingPlan {status: 'registered-and-verified'; identity: ExpectedIdentity}
+export function planOnboarding(declaration: Declaration): OnboardingPlan;
 export interface ClientOptions {
   baseUrl: string;
   token: TokenProvider;
@@ -32,6 +44,7 @@ export class TurboOgreClient {
   validate(channel: string): Promise<{repository: string; channel: string; subject: string; environment?: string; ref?: string}>;
   register(declaration: Declaration): Promise<Registration>;
   status(): Promise<Registration>;
+  onboard(request: {declaration: Declaration; expected: ExpectedIdentity}): Promise<OnboardingResult>;
   list(channel: string): Promise<{repository: string; channel: string; artifacts: ArtifactRecord[]}>;
   publish(options: {channel: string; artifact: string; bytes: Uint8Array}): Promise<PublishReceipt>;
   fetchArtifact(options: {channel: string; artifact: string; expectedDigest: string}): Promise<Uint8Array>;

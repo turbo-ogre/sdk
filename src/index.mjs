@@ -1,5 +1,7 @@
 // Copyright (c) 2026 Jacob Repp. SPDX-License-Identifier: MIT
 import {createHash} from 'node:crypto';
+import {onboard as onboardClient} from './onboarding.mjs';
+export {planOnboarding} from './onboarding.mjs';
 
 const MAX_ARTIFACT_BYTES = 512 * 1024 * 1024;
 const MAX_DECLARATION_BYTES = 64 * 1024;
@@ -153,6 +155,7 @@ export class TurboOgreClient {
     return this.#request('POST', '/v1/config', {body: JSON.stringify(validateDeclaration(declaration)), headers: {'Content-Type': 'application/yaml'}});
   }
   status() { return this.#request('GET', '/v1/config'); }
+  onboard(request) { return onboardClient(this, request); }
   list(channel) { return this.#request('GET', `/v1/artifacts/${encodeURIComponent(channelName(channel))}`); }
   async publish({channel, artifact, bytes}) {
     channelName(channel); artifactName(artifact);
