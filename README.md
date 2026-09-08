@@ -46,9 +46,12 @@ rights; repository identity and ref come from the verified token on the server.
 For a consumer checkout, install a reviewed commit instead of a moving branch:
 
 ```sh
-npm install --save-dev @turbo-ogre/sdk@git+https://github.com/turbo-ogre/sdk.git#COMMIT_SHA
+npm install --save-dev --save-exact https://codeload.github.com/turbo-ogre/sdk/tar.gz/COMMIT_SHA
 npx turbo-ogre check --file hosting.json
 ```
+
+The HTTPS archive URL pins the commit without npm's GitHub shorthand switching
+the download to SSH. The consumer lockfile records the archive integrity hash.
 
 Supply the backend URL and token audience as deployment environment variables:
 
