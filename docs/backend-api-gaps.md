@@ -12,6 +12,9 @@ also requires the deployment and browser-access interfaces.
 The smallest useful hosted milestone is a protected static content-forge site,
 deployed from a verified immutable artifact. That proves the shared lifecycle
 before adding Biohazard's Node runtime, persistent world, and disposable previews.
+The full content-forge product is a team workspace that launches hosted
+Blockbench and manages sources, generation, reviews and packs; the static site
+is an incremental delivery slice within that larger scope.
 
 ## Evidence boundary
 
@@ -92,8 +95,31 @@ Physical host selection stays in fleet policy. Artemis is the requested initial
 content-forge placement, not a host field for every consumer to manage.
 
 The [Blockbench dependency review](blockbench-dependency-boundary.md) separates
-the producer toolchain from these hosting APIs and recommends a pinned editor
-worker plus independently packaged viewer/texture dependencies.
+the producer toolchain from these hosting APIs and describes a pinned hosted
+editor with a workspace extension, automated export workers, and independently
+packaged viewer/texture dependencies.
+
+## Content-forge workspace services
+
+The team's [workspace design](https://github.com/jrepp/content-forge/blob/4ded0e8/docs/workspace-architecture.md)
+adds application services beyond static review delivery. Their domain operations
+belong in content-forge; the Turbo Ogre SDK supplies the common platform
+capabilities they depend on.
+
+| Content-forge application surface | Platform dependency |
+| --- | --- |
+| Asset/family catalog and immutable source revisions; draft saves with conflict detection | Project identity, durable objects, revision metadata and conditional writes |
+| Editor launch/attach, source load/save, recovery and export receipts | Hosted tool deployment, scoped browser/workload access, artifact transfer |
+| Generation recipes/jobs, input and toolchain provenance | Existing Actions execution initially; bounded job lifecycle and artifact/log retention for a hosted executor |
+| Team assignments and decisions against exact review snapshots | Persistent application records, authenticated reviewer identity and delegated access |
+| Modpack manifests, dependency closure and reproducible builds | Versioned artifact storage and controlled publication/promotion |
+
+Do not implement a `.bbmodel` interpreter, actor/family policy, or review approval
+rules inside hosting-api. A Blockbench extension uses the editor's tooling and
+automation contract; content-forge coordinates its session and durable source
+revisions. Hosted Blockbench itself is available today; the project-scoped
+launch/save/return bridge and shared content-forge persistence still need to be
+implemented and tested.
 
 ## Actions-specific contracts that cannot live only in YAML
 

@@ -4,10 +4,18 @@ Review date: 2026-09-08. Recommendation for the
 [Actions and backend migration](backend-api-gaps.md); no dependency migration
 is implemented by this review.
 
-Manage a pinned Blockbench build as content-forge's authoring/export tool.
-Make content-forge's packaging, review viewer, and portable raster processing
-independently installable. Maintain one implementation of the model codecs and
-editor semantics in Blockbench.
+Content-forge is the team content workspace: it manages assets, generation,
+source-to-build provenance, reviews and modpack builds. It launches Blockbench
+as an instance editor, automation host and tooling surface for the selected
+asset or family. Manage a pinned hosted editor build and integration extension
+for that workflow, with the same tool identity available to automated jobs.
+Maintain one implementation of the model codecs and editor semantics in
+Blockbench. Packaging and review tools can remain independently installable.
+
+The consumer's [workspace architecture](https://github.com/jrepp/content-forge/blob/4ded0e8/docs/workspace-architecture.md)
+is the product design: session launch, source saves, concurrent edits,
+generation, team review and reproducible packs. This document describes the
+dependency boundary that supports it.
 
 ## How deep the current dependency is
 
@@ -50,7 +58,7 @@ build identity belong in the supported automation boundary.
 | Choice | Assessment |
 | --- | --- |
 | Copy the entire editor into content-forge's source tree | Adds update/build ownership without reducing renderer coupling. Avoid making this the permanent integration. |
-| Pin the automation-enabled Blockbench fork as a tool dependency | Recommended. Install a versioned tool artifact or reproducibly build an exact source commit for export jobs. A pinned submodule/checkout is a workable bootstrap. |
+| Pin the automation-enabled Blockbench fork as a tool dependency | Recommended. Serve a versioned web editor with the integration extension; provision the same toolchain for export jobs. A pinned submodule/checkout is a workable bootstrap. |
 | Build a separate content-forge model compiler | Would duplicate codec, project-format, texture and transform behavior. Defer unless a measured deployment constraint justifies a deliberately limited compiler with export-parity fixtures. |
 | Independently package the viewer and portable texture core | Recommended now. These already have useful boundaries and do not need an editor process. |
 
@@ -67,7 +75,28 @@ retain the source download. It should not need its own general `.bbmodel`
 interpreter. Blockbench documents that its
 [project format can change](https://blockbench.net/wiki/docs/bbmodel/).
 
-## Concrete next slice
+## Hosted workspace integration
+
+Blockbench's web build and [launch parameters](https://blockbench.net/wiki/docs/url-parameters/)
+already support opening content and prompting for plugins. A content-forge
+extension can supply the workspace context and save/export actions. The missing
+contract is the complete revision-bound editing session, not the web editor.
+
+Start with **Edit in Blockbench** from a family page, opening a dedicated editor
+tab. Bind it to an exact source revision, save a new revision back to the
+workspace, export a candidate, and return to its review sheet. An embedded panel
+can use the same bridge after browser interaction and origin policies are
+validated. The browser executes the interactive editor; automated exports
+require a separate browser/editor worker.
+
+The proposed bridge needs authenticated launch/attach, method and tool-build
+discovery, source/dependency load, acknowledged saves with expected revisions,
+export receipts, and detach/recovery. Two authors saving from one base must not
+silently overwrite each other. Keep the editor's Undo and local recovery state
+separate from durable workspace saves. Return hashes and source revision links
+with exports, so opening a review can lead back to the exact editable source.
+
+## Supporting dependency work
 
 1. Give content-forge direct, locked esbuild/Three.js dependencies. Prove that
    a review sheet and bundle can be produced with `BLOCKBENCH_ROOT` absent
@@ -85,17 +114,25 @@ interpreter. Blockbench documents that its
    immutable export artifact. Packaging and hosting consume that artifact.
 
 For GitHub Actions, this produces two useful job types: an editor export job
-with the pinned tool, and an ordinary Node/Python packaging job. The hosted
-review site runs neither the editor nor the texture generator. Minosoft remains
+with the pinned tool, and an ordinary Node/Python packaging job. Static review
+pages need neither the editor nor the texture generator; the full workspace
+launches the editor when an author chooses to edit. Minosoft remains
 the final rendering/behavior validation boundary; a successful Blockbench export
 or studio screenshot does not establish Minecraft-quality acceptance.
+
+These dependency extractions support the product architecture. They should not
+delay the first hosted edit/save/export/review round trip; use pinned tool
+inputs while proving that integration.
 
 ## Relationship to Turbo Ogre
 
 The public Turbo Ogre SDK should transfer artifacts, request deployments, wait
 for readiness, and handle project access. It does not need `add_cube`, UV, or
 Blockbench project methods. Those belong to the producer's client adapter.
-Existing Actions runners can execute the export tool; a future hosted export
+The content-forge application owns source revisions, edit sessions, generation
+recipes, reviews and pack definitions. Its backend uses platform identity,
+storage and runtime services through public interfaces. Existing Actions
+runners can execute the export tool; a future hosted export
 service would additionally need bounded job submission/status/cancellation,
 tool-image identity, scoped artifact access, and result/log retention.
 
@@ -103,7 +140,8 @@ The fork currently mounts an opt-in **in-process** `AutomationRuntime` and
 content-forge reaches it through local CDP evaluation. A socket implementation
 exists in the sidecar, but the editor does not expose an authenticated production
 automation service. Provisioning the tool in CI and exposing it remotely are
-separate capabilities; the web-hosting MVP does not depend on remote automation.
+separate capabilities. The static review delivery slice can precede the complete
+workspace integration, but does not replace the hosted editor product goal.
 
 ## Source snapshot
 
