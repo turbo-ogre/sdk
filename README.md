@@ -9,6 +9,8 @@ The initial consumers are [content-forge](examples/content-forge/README.md), wit
 Minecraft content review sheets, and [Biohazard](examples/biohazard/README.md),
 with game/world artifacts and preview channels. Start with the
 [MVP review loop](docs/mvp-review.md) to try both without credentials.
+The [backend API gap review](docs/backend-api-gaps.md) maps the Railway migration
+and content-forge Actions automation to the next platform interfaces.
 For development, see [contributing and Git checks](CONTRIBUTING.md).
 
 ## Current scope
