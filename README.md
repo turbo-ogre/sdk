@@ -151,3 +151,7 @@ membership, choose another tenant's namespace, or bypass fleet policy.
 
 See the [backend contract](docs/backend-contract.md) and
 [content-forge onboarding](examples/content-forge/README.md).
+
+## License
+
+MIT — see [LICENSE](LICENSE).
